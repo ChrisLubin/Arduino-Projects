@@ -2,15 +2,19 @@
 #define INCLUDE_GAMEPAD_MODULE
 #include <Dabble.h>
 
+CONTROL_MODE controlMode = MANUAL;
+
 void setUpBluetooth() {
   Dabble.begin(9600, 0, 1);
   Dabble.pin_rx = 0;
   Dabble.pin_tx = 1;
 }
 
-MOTOR_ACTIONS getActionFromBluetooth() {
+void bluetoothLoop() {
   Dabble.processInput();
+}
 
+MOTOR_ACTIONS getActionFromBluetooth() {
   if (GamePad.isUpPressed()) {
     return GO_FORWARD;
   } else if (GamePad.isRightPressed()) {
@@ -24,3 +28,11 @@ MOTOR_ACTIONS getActionFromBluetooth() {
   return NONE;
 }
 
+CONTROL_MODE getControlModeFromBluetooth() {
+  if (GamePad.isStartPressed()) {
+    controlMode = controlMode == MANUAL ? SELF_BALANCING : MANUAL;
+    delay(150);
+  }
+
+  return controlMode;
+}

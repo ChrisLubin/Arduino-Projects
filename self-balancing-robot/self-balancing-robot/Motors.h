@@ -1,3 +1,5 @@
+#define MOTOR_SPEED 50
+
 void stopMotors()
 {
   digitalWrite(AIN1, HIGH);
@@ -22,8 +24,8 @@ void rotateMotorsForward()
   digitalWrite(AIN1, LOW);
   digitalWrite(BIN1, LOW);
   digitalWrite(STBY_PIN, HIGH);
-  analogWrite(PWMA_LEFT, 100);
-  analogWrite(PWMB_RIGHT, 100);
+  analogWrite(PWMA_LEFT, MOTOR_SPEED);
+  analogWrite(PWMB_RIGHT, MOTOR_SPEED);
 }
 
 void rotateMotorsBackwards()
@@ -31,8 +33,8 @@ void rotateMotorsBackwards()
   digitalWrite(AIN1, HIGH);
   digitalWrite(BIN1, HIGH);
   digitalWrite(STBY_PIN, HIGH);
-  analogWrite(PWMA_LEFT, 100);
-  analogWrite(PWMB_RIGHT, 100);
+  analogWrite(PWMA_LEFT, MOTOR_SPEED);
+  analogWrite(PWMB_RIGHT, MOTOR_SPEED);
 }
 
 void processMotorAction(MOTOR_ACTIONS action) {

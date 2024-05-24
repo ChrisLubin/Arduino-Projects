@@ -10,4 +10,10 @@ enum MOTOR_ACTIONS
   ROTATE_RIGHT
 };
 
+enum CONTROL_MODE
+{
+  MANUAL,
+  SELF_BALANCING
+};
+
 #endif

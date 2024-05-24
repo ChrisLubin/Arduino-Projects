@@ -15,7 +15,27 @@ void setup() {
 void loop() {
   delay(5);
 
-  MOTOR_ACTIONS action = getActionFromBluetooth();
+  accelerometerLoop();
+  bluetoothLoop();
+
+  getAndProcessMotorAction();
+}
+
+void getAndProcessMotorAction() {
+  MOTOR_ACTIONS action;
+  CONTROL_MODE controlMode = getControlModeFromBluetooth();
+
+  switch(controlMode) {
+    case MANUAL:
+      action = getActionFromBluetooth();
+      break;
+    case SELF_BALANCING:
+      action = getActionFromAccelerometer();
+      break;
+    default:
+      action = NONE;
+      break;
+  }
+
   processMotorAction(action);
-  logAccelerometerData();
 }
