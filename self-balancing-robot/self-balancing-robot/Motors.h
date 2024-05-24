@@ -2,9 +2,7 @@
 
 void stopMotors()
 {
-  digitalWrite(AIN1, HIGH);
-  digitalWrite(BIN1, LOW);
-  digitalWrite(STBY_PIN, HIGH);
+  digitalWrite(STBY_PIN, LOW);
   analogWrite(PWMA_LEFT, 0);
   analogWrite(PWMB_RIGHT, 0);
 }
@@ -19,31 +17,55 @@ void setUpMotors() {
   stopMotors();
 }
 
-void rotateMotorsForward()
-{
-  digitalWrite(AIN1, LOW);
-  digitalWrite(BIN1, LOW);
+void moveLeftWheel(bool isForward) {
   digitalWrite(STBY_PIN, HIGH);
+  digitalWrite(AIN1, isForward ? LOW : HIGH);
   analogWrite(PWMA_LEFT, MOTOR_SPEED);
+}
+
+void moveRightWheel(bool isForward) {
+  digitalWrite(STBY_PIN, HIGH);
+  digitalWrite(BIN1, isForward ? LOW : HIGH);
   analogWrite(PWMB_RIGHT, MOTOR_SPEED);
 }
 
-void rotateMotorsBackwards()
+void moveForward()
 {
-  digitalWrite(AIN1, HIGH);
-  digitalWrite(BIN1, HIGH);
-  digitalWrite(STBY_PIN, HIGH);
-  analogWrite(PWMA_LEFT, MOTOR_SPEED);
-  analogWrite(PWMB_RIGHT, MOTOR_SPEED);
+  moveLeftWheel(true);
+  moveRightWheel(true);
+}
+
+void moveBackwards()
+{
+  moveLeftWheel(false);
+  moveRightWheel(false);
+}
+
+void rotateRight()
+{
+  moveLeftWheel(true);
+  moveRightWheel(false);
+}
+
+void rotateLeft()
+{
+  moveLeftWheel(false);
+  moveRightWheel(true);
 }
 
 void processMotorAction(MOTOR_ACTIONS action) {
   switch(action) {
     case GO_FORWARD:
-      rotateMotorsForward();
+      moveForward();
+      break;
+    case ROTATE_RIGHT:
+      rotateRight();
       break;
     case GO_BACKWARD:
-      rotateMotorsBackwards();
+      moveBackwards();
+      break;
+    case ROTATE_LEFT:
+      rotateLeft();
       break;
     default:
       stopMotors();
