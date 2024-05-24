@@ -2,12 +2,14 @@
 #include "Pins.h"
 #include "Motors.h"
 #include "Bluetooth.h"
+#include "Accelerometer.h"
 
 void setup() {
   Serial.begin(9600);
 
-  setUpBluetooth();
+  setUpAccelerometer();
   setUpMotors();
+  setUpBluetooth();
 }
 
 void loop() {
@@ -15,4 +17,5 @@ void loop() {
 
   MOTOR_ACTIONS action = getActionFromBluetooth();
   processMotorAction(action);
+  logAccelerometerData();
 }
