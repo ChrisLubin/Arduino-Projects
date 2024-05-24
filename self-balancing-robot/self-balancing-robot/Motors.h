@@ -7,6 +7,14 @@ void stopMotors()
   analogWrite(PWMB_RIGHT, 0);
 }
 
+void stopLeftWheel() {
+  analogWrite(PWMA_LEFT, 0);
+}
+
+void stopRightWheel() {
+  analogWrite(PWMB_RIGHT, 0);
+}
+
 void setUpMotors() {
   pinMode(AIN1, OUTPUT);
   pinMode(BIN1, OUTPUT);
@@ -41,16 +49,26 @@ void moveBackwards()
   moveRightWheel(false);
 }
 
-void rotateRight()
+void rotateRight(bool isInPlace)
 {
   moveLeftWheel(true);
-  moveRightWheel(false);
+
+  if (isInPlace) {
+    moveRightWheel(false);
+  } else {
+    stopRightWheel();
+  }
 }
 
-void rotateLeft()
+void rotateLeft(bool isInPlace)
 {
-  moveLeftWheel(false);
   moveRightWheel(true);
+
+  if (isInPlace) {
+    moveLeftWheel(false);
+  } else {
+    stopLeftWheel();
+  }
 }
 
 void processMotorAction(MOTOR_ACTIONS action) {
@@ -58,14 +76,20 @@ void processMotorAction(MOTOR_ACTIONS action) {
     case GO_FORWARD:
       moveForward();
       break;
-    case ROTATE_RIGHT:
-      rotateRight();
+    case ROTATE_RIGHT_IN_PLACE:
+      rotateRight(true);
+      break;
+    case ROTATE_RIGHT_IN_CIRCLE:
+      rotateRight(false);
       break;
     case GO_BACKWARD:
       moveBackwards();
       break;
-    case ROTATE_LEFT:
-      rotateLeft();
+    case ROTATE_LEFT_IN_PLACE:
+      rotateLeft(true);
+      break;
+    case ROTATE_LEFT_IN_CIRCLE:
+      rotateLeft(false);
       break;
     default:
       stopMotors();

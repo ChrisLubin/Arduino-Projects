@@ -18,11 +18,15 @@ MOTOR_ACTIONS getActionFromBluetooth() {
   if (GamePad.isUpPressed()) {
     return GO_FORWARD;
   } else if (GamePad.isRightPressed()) {
-    return ROTATE_RIGHT;
+    return ROTATE_RIGHT_IN_PLACE;
+  } else if (GamePad.isCirclePressed()) {
+    return ROTATE_RIGHT_IN_CIRCLE;
   } else if (GamePad.isDownPressed()) {
     return GO_BACKWARD;
   } else if (GamePad.isLeftPressed()) {
-    return ROTATE_LEFT;
+    return ROTATE_LEFT_IN_PLACE;
+  } else if (GamePad.isSquarePressed()) {
+    return ROTATE_LEFT_IN_CIRCLE;
   }
 
   return NONE;
