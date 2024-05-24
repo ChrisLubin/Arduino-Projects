@@ -19,7 +19,7 @@ void setUpMotors() {
 
 void rotateMotorsForward()
 {
-  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN1, LOW);
   digitalWrite(BIN1, LOW);
   digitalWrite(STBY_PIN, HIGH);
   analogWrite(PWMA_LEFT, 100);
@@ -28,7 +28,7 @@ void rotateMotorsForward()
 
 void rotateMotorsBackwards()
 {
-  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN1, HIGH);
   digitalWrite(BIN1, HIGH);
   digitalWrite(STBY_PIN, HIGH);
   analogWrite(PWMA_LEFT, 100);
