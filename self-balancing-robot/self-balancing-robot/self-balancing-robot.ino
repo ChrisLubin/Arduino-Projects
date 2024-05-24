@@ -1,29 +1,18 @@
+#include "Actions.h"
 #include "Pins.h"
+#include "Motors.h"
+#include "Bluetooth.h"
 
 void setup() {
-  pinMode(AIN1, OUTPUT);
-  pinMode(BIN1, OUTPUT);
-  pinMode(PWMA_LEFT, OUTPUT);
-  pinMode(PWMB_RIGHT, OUTPUT);
-  pinMode(STBY_PIN, OUTPUT);
+  Serial.begin(9600);
 
-  stopMotors();
-
-  digitalWrite(LED_BUILTIN, HIGH);
+  setUpBluetooth();
+  setUpMotors();
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(500);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(500);
-}
+  delay(5);
 
-void stopMotors()
-{
-  digitalWrite(AIN1, HIGH);
-  digitalWrite(BIN1, LOW);
-  digitalWrite(STBY_PIN, HIGH);
-  analogWrite(PWMA_LEFT, 0);
-  analogWrite(PWMB_RIGHT, 0);
+  MOTOR_ACTIONS action = getActionFromBluetooth();
+  processMotorAction(action);
 }
