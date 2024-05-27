@@ -35,7 +35,12 @@ MOTOR_ACTIONS getActionFromBluetooth() {
 CONTROL_MODE getControlModeFromBluetooth() {
   if (GamePad.isStartPressed()) {
     controlMode = controlMode == MANUAL ? SELF_BALANCING : MANUAL;
-    delay(150);
+
+    // Wait until toggle button is no longer pressed
+    while(GamePad.isStartPressed()) {
+      delay(1);
+      Dabble.processInput();
+    }
   }
 
   return controlMode;
