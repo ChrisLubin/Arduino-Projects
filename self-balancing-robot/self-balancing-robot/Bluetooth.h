@@ -14,8 +14,8 @@ void bluetoothLoop() {
   Dabble.processInput();
 }
 
-void waitUntilNot(bool (*funcToCheck)()) {
-  while((*funcToCheck)()) {
+void waitUntil(bool (*funcToCheck)()) {
+  while(!(*funcToCheck)()) {
     delay(1);
     Dabble.processInput();
   }
@@ -23,11 +23,11 @@ void waitUntilNot(bool (*funcToCheck)()) {
 
 MOTOR_ACTIONS getActionFromBluetooth() {
   if (GamePad.isTrianglePressed()) {
-    waitUntilNot([]() { return GamePad.isTrianglePressed(); });
+    waitUntil([]() { return !GamePad.isTrianglePressed(); });
 
     return INCREASE_SPEED;
   } else if (GamePad.isCrossPressed()) {
-    waitUntilNot([]() { return GamePad.isCrossPressed(); });
+    waitUntil([]() { return !GamePad.isCrossPressed(); });
 
     return DECREASE_SPEED;
   } else if (GamePad.isUpPressed()) {
@@ -51,7 +51,7 @@ CONTROL_MODE getControlModeFromBluetooth() {
   if (GamePad.isStartPressed()) {
     controlMode = controlMode == MANUAL ? SELF_BALANCING : MANUAL;
 
-    waitUntilNot([]() { return GamePad.isStartPressed(); });
+    waitUntil([]() { return !GamePad.isStartPressed(); });
   }
 
   return controlMode;
