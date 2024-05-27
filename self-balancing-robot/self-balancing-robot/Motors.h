@@ -1,4 +1,9 @@
-#define MOTOR_SPEED 50
+#define LOWEST_MOTOR_SPEED 50
+#define HIGHEST_MOTOR_SPEED 255
+#define DEFAULT_MOTOR_SPEED 50
+#define MOTOR_SPEED_CHANGE_INTERVAL 15
+
+int motorSpeed = DEFAULT_MOTOR_SPEED;
 
 void stopMotors()
 {
@@ -28,13 +33,13 @@ void setUpMotors() {
 void moveLeftWheel(bool isForward) {
   digitalWrite(STBY_PIN, HIGH);
   digitalWrite(AIN1, isForward ? LOW : HIGH);
-  analogWrite(PWMA_LEFT, MOTOR_SPEED);
+  analogWrite(PWMA_LEFT, motorSpeed);
 }
 
 void moveRightWheel(bool isForward) {
   digitalWrite(STBY_PIN, HIGH);
   digitalWrite(BIN1, isForward ? LOW : HIGH);
-  analogWrite(PWMB_RIGHT, MOTOR_SPEED);
+  analogWrite(PWMB_RIGHT, motorSpeed);
 }
 
 void moveForward()
@@ -71,8 +76,22 @@ void rotateLeft(bool isInPlace)
   }
 }
 
+void increaseSpeed() {
+  motorSpeed = constrain(motorSpeed + MOTOR_SPEED_CHANGE_INTERVAL, LOWEST_MOTOR_SPEED, HIGHEST_MOTOR_SPEED);
+}
+
+void decreaseSpeed() {
+  motorSpeed = constrain(motorSpeed - MOTOR_SPEED_CHANGE_INTERVAL, LOWEST_MOTOR_SPEED, HIGHEST_MOTOR_SPEED);
+}
+
 void processMotorAction(MOTOR_ACTIONS action) {
   switch(action) {
+    case INCREASE_SPEED:
+      increaseSpeed();
+      break;
+    case DECREASE_SPEED:
+      decreaseSpeed();
+      break;
     case GO_FORWARD:
       moveForward();
       break;
