@@ -1,14 +1,12 @@
 #include "Wire.h"
 #include <MPU6050_light.h>
 
-MPU6050 mpu(Wire);
-unsigned long timer = 0;
-
 #define DATA_CHECK_INTERVAL_MILLIS 10
-bool isLogging = false;
-float angleX;
-float angleY;
-float angleZ;
+
+MPU6050 mpu(Wire);
+
+bool isLogging = true;
+double currentAngle = 0;
 
 void setUpAccelerometer() {
   digitalWrite(LED_BUILTIN, HIGH);
@@ -19,41 +17,31 @@ void setUpAccelerometer() {
   Serial.println(status);
   while(status != 0) { } // wait for MPU6050 to be ready
   
-  Serial.println(F("Calculating offsets, do not move MPU6050"));
-  delay(1000);
-  mpu.calcOffsets(); // gyro and accelero
-  Serial.println("Done calibrating!\n");
   digitalWrite(LED_BUILTIN, LOW);
 }
 
 void accelerometerLoop() {
   mpu.update();
 
-  if((millis() - timer) > DATA_CHECK_INTERVAL_MILLIS) {
-    angleX = mpu.getAngleX();
-    angleY = mpu.getAngleY();
-    angleZ = mpu.getAngleZ();
-    timer = millis();  
-  }
+  currentAngle = mpu.getAngleX();
 
   if (isLogging) {
-    Serial.print("X : ");
-    Serial.print(mpu.getAngleX());
-    Serial.print("\tY : ");
-    Serial.print(mpu.getAngleY());
-    Serial.print("\tZ : ");
-    Serial.println(mpu.getAngleZ());
+    Serial.print("Angle - ");
+    Serial.println(currentAngle);
   }
 }
 
-MOTOR_ACTIONS getActionFromAccelerometer() {
-  if (abs(angleX) <= 5) {
-    return NONE;
-  } else if (angleX > 0) {
-    return GO_FORWARD;
-  } else if (angleX < 0) {
-    return GO_BACKWARD;
-  } else {
-    return NONE;
+MotorCommand getCommandFromAccelerometer() {
+  MotorCommand command;
+  command.speed = 50;
+
+  if (abs(currentAngle) <= 2) {
+    command.action = NONE;
+  } else if (currentAngle > 0) {
+    command.action = GO_FORWARD;
+  } else if (currentAngle < 0) {
+    command.action = GO_BACKWARD;
   }
+
+  return command;
 }

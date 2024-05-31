@@ -4,6 +4,7 @@
 #define MOTOR_SPEED_CHANGE_INTERVAL 15
 
 int motorSpeed = DEFAULT_MOTOR_SPEED;
+// volatile long motorEncoder = 0;
 
 void stopMotors()
 {
@@ -20,6 +21,10 @@ void stopRightWheel() {
   analogWrite(PWMB_RIGHT, 0);
 }
 
+// void onLeftChange() {
+//   motorEncoder++;
+// }
+
 void setUpMotors() {
   pinMode(AIN1, OUTPUT);
   pinMode(BIN1, OUTPUT);
@@ -27,50 +32,60 @@ void setUpMotors() {
   pinMode(PWMB_RIGHT, OUTPUT);
   pinMode(STBY_PIN, OUTPUT);
 
+  // attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A_PIN), onLeftChange, CHANGE);
+
   stopMotors();
 }
 
-void moveLeftWheel(bool isForward) {
+int getProperSpeed(int speed) {
+  if (speed == DONT_CHANGE_SPEED_VALUE) {
+    return motorSpeed;
+  }
+
+  return speed;
+}
+
+void moveLeftWheel(bool isForward, int speed) {
   digitalWrite(STBY_PIN, HIGH);
   digitalWrite(AIN1, isForward ? LOW : HIGH);
-  analogWrite(PWMA_LEFT, motorSpeed);
+  analogWrite(PWMA_LEFT, getProperSpeed(speed));
 }
 
-void moveRightWheel(bool isForward) {
+void moveRightWheel(bool isForward, int speed) {
   digitalWrite(STBY_PIN, HIGH);
   digitalWrite(BIN1, isForward ? LOW : HIGH);
-  analogWrite(PWMB_RIGHT, motorSpeed);
+  analogWrite(PWMB_RIGHT, getProperSpeed(speed));
 }
 
-void moveForward()
+void moveForward(int speed)
 {
-  moveLeftWheel(true);
-  moveRightWheel(true);
+  moveLeftWheel(true, speed);
+  moveRightWheel(true, speed);
 }
 
-void moveBackwards()
+void moveBackwards(int speed)
 {
-  moveLeftWheel(false);
-  moveRightWheel(false);
+  moveLeftWheel(false, speed);
+  moveRightWheel(false, speed);
 }
 
-void rotateRight(bool isInPlace)
+void rotateRight(bool isInPlace, int speed)
 {
-  moveLeftWheel(true);
+  moveLeftWheel(true, speed);
 
   if (isInPlace) {
-    moveRightWheel(false);
+    moveRightWheel(false, speed);
   } else {
     stopRightWheel();
   }
 }
 
-void rotateLeft(bool isInPlace)
+void rotateLeft(bool isInPlace, int speed)
 {
-  moveRightWheel(true);
+  moveRightWheel(true, speed);
 
   if (isInPlace) {
-    moveLeftWheel(false);
+    moveLeftWheel(false, speed);
   } else {
     stopLeftWheel();
   }
@@ -84,8 +99,8 @@ void decreaseSpeed() {
   motorSpeed = constrain(motorSpeed - MOTOR_SPEED_CHANGE_INTERVAL, LOWEST_MOTOR_SPEED, HIGHEST_MOTOR_SPEED);
 }
 
-void processMotorAction(MOTOR_ACTIONS action) {
-  switch(action) {
+void processMotorCommand(MotorCommand command) {
+  switch(command.action) {
     case INCREASE_SPEED:
       increaseSpeed();
       break;
@@ -93,22 +108,22 @@ void processMotorAction(MOTOR_ACTIONS action) {
       decreaseSpeed();
       break;
     case GO_FORWARD:
-      moveForward();
+      moveForward(command.speed);
       break;
     case ROTATE_RIGHT_IN_PLACE:
-      rotateRight(true);
+      rotateRight(true, command.speed);
       break;
     case ROTATE_RIGHT_IN_CIRCLE:
-      rotateRight(false);
+      rotateRight(false, command.speed);
       break;
     case GO_BACKWARD:
-      moveBackwards();
+      moveBackwards(command.speed);
       break;
     case ROTATE_LEFT_IN_PLACE:
-      rotateLeft(true);
+      rotateLeft(true, command.speed);
       break;
     case ROTATE_LEFT_IN_CIRCLE:
-      rotateLeft(false);
+      rotateLeft(false, command.speed);
       break;
     default:
       stopMotors();

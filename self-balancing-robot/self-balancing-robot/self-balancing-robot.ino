@@ -18,24 +18,25 @@ void loop() {
   accelerometerLoop();
   bluetoothLoop();
 
-  getAndProcessMotorAction();
+  getAndProcessMotorCommand();
 }
 
-void getAndProcessMotorAction() {
-  MOTOR_ACTIONS action;
+void getAndProcessMotorCommand() {
+  MotorCommand command;
   CONTROL_MODE controlMode = getControlModeFromBluetooth();
 
   switch(controlMode) {
     case MANUAL:
-      action = getActionFromBluetooth();
+      command = getCommandFromBluetooth();
       break;
     case SELF_BALANCING:
-      action = getActionFromAccelerometer();
+      command = getCommandFromAccelerometer();
       break;
     default:
-      action = NONE;
+      command.action = NONE;
+      command.speed = 0;
       break;
   }
 
-  processMotorAction(action);
+  processMotorCommand(command);
 }

@@ -2,7 +2,7 @@
 #define INCLUDE_GAMEPAD_MODULE
 #include <Dabble.h>
 
-CONTROL_MODE controlMode = MANUAL;
+CONTROL_MODE controlMode = SELF_BALANCING;
 
 void setUpBluetooth() {
   Dabble.begin(9600, 0, 1);
@@ -21,30 +21,40 @@ void waitUntil(bool (*funcToCheck)()) {
   }
 }
 
-MOTOR_ACTIONS getActionFromBluetooth() {
+MotorCommand getCommandFromBluetooth() {
+  MotorCommand command;
+
   if (GamePad.isTrianglePressed()) {
     waitUntil([]() { return !GamePad.isTrianglePressed(); });
 
-    return INCREASE_SPEED;
+    command.action = INCREASE_SPEED;
   } else if (GamePad.isCrossPressed()) {
     waitUntil([]() { return !GamePad.isCrossPressed(); });
 
-    return DECREASE_SPEED;
+    command.action = DECREASE_SPEED;
   } else if (GamePad.isUpPressed()) {
-    return GO_FORWARD;
+    command.action = GO_FORWARD;
+    command.speed = DONT_CHANGE_SPEED_VALUE;
   } else if (GamePad.isRightPressed()) {
-    return ROTATE_RIGHT_IN_PLACE;
+    command.action = ROTATE_RIGHT_IN_PLACE;
+    command.speed = DONT_CHANGE_SPEED_VALUE;
   } else if (GamePad.isCirclePressed()) {
-    return ROTATE_RIGHT_IN_CIRCLE;
+    command.action = ROTATE_RIGHT_IN_CIRCLE;
+    command.speed = DONT_CHANGE_SPEED_VALUE;
   } else if (GamePad.isDownPressed()) {
-    return GO_BACKWARD;
+    command.action = GO_BACKWARD;
+    command.speed = DONT_CHANGE_SPEED_VALUE;
   } else if (GamePad.isLeftPressed()) {
-    return ROTATE_LEFT_IN_PLACE;
+    command.action = ROTATE_LEFT_IN_PLACE;
+    command.speed = DONT_CHANGE_SPEED_VALUE;
   } else if (GamePad.isSquarePressed()) {
-    return ROTATE_LEFT_IN_CIRCLE;
+    command.action = ROTATE_LEFT_IN_CIRCLE;
+    command.speed = DONT_CHANGE_SPEED_VALUE;
+  } else {
+    command.action = NONE;
   }
 
-  return NONE;
+  return command;
 }
 
 CONTROL_MODE getControlModeFromBluetooth() {

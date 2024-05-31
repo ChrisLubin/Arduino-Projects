@@ -1,6 +1,8 @@
 #ifndef Actions_h
 #define Actions_h
 
+#define DONT_CHANGE_SPEED_VALUE -1
+
 enum MOTOR_ACTIONS
 {
   NONE,
@@ -12,6 +14,11 @@ enum MOTOR_ACTIONS
   ROTATE_RIGHT_IN_CIRCLE,
   INCREASE_SPEED,
   DECREASE_SPEED
+};
+
+struct MotorCommand {
+  MOTOR_ACTIONS action;
+  int speed;
 };
 
 enum CONTROL_MODE
