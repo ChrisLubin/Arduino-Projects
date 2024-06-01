@@ -13,7 +13,7 @@ void setup() {
 }
 
 void loop() {
-  delay(5);
+  delay(2);
 
   accelerometerLoop();
   bluetoothLoop();

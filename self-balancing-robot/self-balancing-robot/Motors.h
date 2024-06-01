@@ -1,4 +1,4 @@
-#define LOWEST_MOTOR_SPEED 50
+#define LOWEST_MOTOR_SPEED 20
 #define HIGHEST_MOTOR_SPEED 255
 #define DEFAULT_MOTOR_SPEED 50
 #define MOTOR_SPEED_CHANGE_INTERVAL 15
@@ -26,6 +26,7 @@ void stopRightWheel() {
 // }
 
 void setUpMotors() {
+  // pinMode(ENCODER_LEFT_A_PIN, INPUT);
   pinMode(AIN1, OUTPUT);
   pinMode(BIN1, OUTPUT);
   pinMode(PWMA_LEFT, OUTPUT);
