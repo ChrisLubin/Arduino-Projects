@@ -1,4 +1,9 @@
-#define MOTOR_SPEED 150
+#define LOWEST_MOTOR_SPEED 130
+#define HIGHEST_MOTOR_SPEED 255
+#define DEFAULT_MOTOR_SPEED 150
+#define MOTOR_SPEED_CHANGE_INTERVAL 15
+
+int motorSpeed = DEFAULT_MOTOR_SPEED;
 
 void stopAll() {
   analogWrite(MOTOR_1_ENABLE_PIN, 0);
@@ -24,25 +29,25 @@ void setUpMotors() {
 }
 
 void rotateMotor1(bool isForward) {
-  analogWrite(MOTOR_1_ENABLE_PIN, MOTOR_SPEED);
+  analogWrite(MOTOR_1_ENABLE_PIN, motorSpeed);
   digitalWrite(MOTOR_1_IN_1_PIN, isForward ? HIGH : LOW);
   digitalWrite(MOTOR_1_IN_2_PIN, isForward ? LOW : HIGH);
 }
 
 void rotateMotor2(bool isForward) {
-  analogWrite(MOTOR_2_ENABLE_PIN, MOTOR_SPEED);
+  analogWrite(MOTOR_2_ENABLE_PIN, motorSpeed);
   digitalWrite(MOTOR_2_IN_1_PIN, isForward ? HIGH : LOW);
   digitalWrite(MOTOR_2_IN_2_PIN, isForward ? LOW : HIGH);
 }
 
 void rotateMotor3(bool isForward) {
-  analogWrite(MOTOR_3_ENABLE_PIN, MOTOR_SPEED);
+  analogWrite(MOTOR_3_ENABLE_PIN, motorSpeed);
   digitalWrite(MOTOR_3_IN_1_PIN, isForward ? HIGH : LOW);
   digitalWrite(MOTOR_3_IN_2_PIN, isForward ? LOW : HIGH);
 }
 
 void rotateMotor4(bool isForward) {
-  analogWrite(MOTOR_4_ENABLE_PIN, MOTOR_SPEED);
+  analogWrite(MOTOR_4_ENABLE_PIN, motorSpeed);
   digitalWrite(MOTOR_4_IN_1_PIN, isForward ? HIGH : LOW);
   digitalWrite(MOTOR_4_IN_2_PIN, isForward ? LOW : HIGH);
 }
@@ -117,9 +122,15 @@ void goBackwardDiagonal(bool isRight) {
   }
 }
 
-void processMotorAction(MOTOR_ACTIONS action) {
-  // Add increase/decrease speed later
+void increaseSpeed() {
+  motorSpeed = constrain(motorSpeed + MOTOR_SPEED_CHANGE_INTERVAL, LOWEST_MOTOR_SPEED, HIGHEST_MOTOR_SPEED);
+}
 
+void decreaseSpeed() {
+  motorSpeed = constrain(motorSpeed - MOTOR_SPEED_CHANGE_INTERVAL, LOWEST_MOTOR_SPEED, HIGHEST_MOTOR_SPEED);
+}
+
+void processMotorAction(MOTOR_ACTIONS action) {
   switch(action) {
     case GO_FORWARD:
       goForward();
@@ -138,6 +149,12 @@ void processMotorAction(MOTOR_ACTIONS action) {
       break;
     case ROTATE_RIGHT:
       rotateRight();
+      break;
+    case INCREASE_SPEED:
+      increaseSpeed();
+      break;
+    case DECREASE_SPEED:
+      decreaseSpeed();
       break;
     default:
       stopAll();

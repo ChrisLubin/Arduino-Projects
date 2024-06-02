@@ -3,6 +3,15 @@
 #include <Dabble.h>
 
 CONTROL_MODE controlMode = MANUAL;
+auto isStartNotPressed = [&GamePad]() { return !GamePad.isStartPressed(); };
+auto isTriangleNotPressed = [&GamePad]() { return !GamePad.isTrianglePressed(); };
+auto isCrossNotPressed = [&GamePad]() { return !GamePad.isCrossPressed(); };
+
+enum BUTTONS_FOR_WAIT {
+  START,
+  TRIANGLE,
+  CROSS
+};
 
 void setUpBluetooth() {
   Dabble.begin(9600, A0, A1);
@@ -12,6 +21,27 @@ void setUpBluetooth() {
 
 void bluetoothLoop() {
   Dabble.processInput();
+}
+
+void waitUntilButtonNotPressed(BUTTONS_FOR_WAIT button) {
+  auto loopFunc = []() {
+    delay(1);
+    Dabble.processInput();
+  };
+
+  switch (button) {
+    case START:
+      waitUntil(isStartNotPressed, loopFunc);
+      break;
+    case TRIANGLE:
+      waitUntil(isTriangleNotPressed, loopFunc);
+      break;
+    case CROSS:
+      waitUntil(isCrossNotPressed, loopFunc);
+      break;
+    default:
+      break;
+  }
 }
 
 MOTOR_ACTIONS getMotorActionFromBluetooth() {
@@ -47,6 +77,14 @@ MOTOR_ACTIONS getMotorActionFromBluetooth() {
   } else if (GamePad.isSquarePressed()) {
     Serial.println("Pressed Square!");
     return ROTATE_LEFT;
+  } else if (GamePad.isTrianglePressed()) {
+    Serial.println("Pressed Triangle!");
+    waitUntilButtonNotPressed(TRIANGLE);
+    return INCREASE_SPEED;
+  } else if (GamePad.isCrossPressed()) {
+    Serial.println("Pressed X!");
+    waitUntilButtonNotPressed(CROSS);
+    return DECREASE_SPEED;
   } else {
     return NONE;
   }
@@ -55,11 +93,8 @@ MOTOR_ACTIONS getMotorActionFromBluetooth() {
 CONTROL_MODE getControlModeFromBluetooth() {
   if (GamePad.isStartPressed()) {
     controlMode = controlMode == MANUAL ? AUTONOMOUS : MANUAL;
-
-    waitUntil([]() { return !GamePad.isStartPressed(); }, []() {
-      delay(1);
-      Dabble.processInput();
-    });
+    Serial.println("Pressed Start!");
+    waitUntilButtonNotPressed(START);
   }
 
   return controlMode;
