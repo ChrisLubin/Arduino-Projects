@@ -12,13 +12,14 @@ bool isLogging = true;
 
 // PID
 double targetAngle = -5;
+const double ORIGNAL_TARGET_ANGLE = targetAngle;
 double currentAngle = 0;
 double pidOutput;
 double kp = 6;
 double ki = 1300;
 double kd = 0.07;
-const double STOP_MOTORS_LOW_ANGLE_THRESHOLD = targetAngle - STOP_MOTORS_ANGLE_THRESHOLD;
-const double STOP_MOTORS_HIGH_ANGLE_THRESHOLD = targetAngle + STOP_MOTORS_ANGLE_THRESHOLD;
+double stopMotorsLowAngleThreshold = targetAngle - STOP_MOTORS_ANGLE_THRESHOLD;
+double stopMotorsHighAngleThreshold = targetAngle + STOP_MOTORS_ANGLE_THRESHOLD;
 PID pidController(&currentAngle, &pidOutput, &targetAngle, kp, ki, kd, REVERSE);
 
 void setUpAccelerometer() {
@@ -51,7 +52,7 @@ void accelerometerLoop() {
 }
 
 int getMotorSpeedFromAccelerometer() {
-  if (currentAngle < STOP_MOTORS_LOW_ANGLE_THRESHOLD || currentAngle > STOP_MOTORS_HIGH_ANGLE_THRESHOLD) {
+  if (currentAngle < stopMotorsLowAngleThreshold || currentAngle > stopMotorsHighAngleThreshold) {
     return 0;
   }
 
@@ -68,4 +69,16 @@ MotorCommand getCommandFromAccelerometer() {
   command.action = getMotorActionFromAccelerometer();
 
   return command;
+}
+
+void updateTargetAngleOffsetThreshold() {
+  stopMotorsLowAngleThreshold = targetAngle - STOP_MOTORS_ANGLE_THRESHOLD;
+  stopMotorsHighAngleThreshold = targetAngle + STOP_MOTORS_ANGLE_THRESHOLD;
+}
+
+// Used to move bot forward or backward
+void setAccelerometerTargetAngleOffset(double offset) {
+  targetAngle = ORIGNAL_TARGET_ANGLE + offset;
+
+  updateTargetAngleOffsetThreshold();
 }

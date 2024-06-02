@@ -3,6 +3,7 @@
 #include <Dabble.h>
 
 CONTROL_MODE controlMode = SELF_BALANCING;
+const int TARGET_ANGLE_OFFSET = 3;
 
 void setUpBluetooth() {
   Dabble.begin(9600, 0, 1);
@@ -65,4 +66,15 @@ CONTROL_MODE getControlModeFromBluetooth() {
   }
 
   return controlMode;
+}
+
+// Used to move bot forward or backward
+int getTargetAngleOffsetFromBluetooth() {
+  if (GamePad.isUpPressed()) {
+    return TARGET_ANGLE_OFFSET;
+  } else if (GamePad.isDownPressed()) {
+    return -TARGET_ANGLE_OFFSET;
+  } else {
+    return 0;
+  }
 }

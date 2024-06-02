@@ -30,6 +30,8 @@ void getAndProcessMotorCommand() {
       command = getCommandFromBluetooth();
       break;
     case SELF_BALANCING:
+      double targetAngleOffset = getTargetAngleOffsetFromBluetooth();
+      setAccelerometerTargetAngleOffset(targetAngleOffset);
       command = getCommandFromAccelerometer();
       break;
     default:
