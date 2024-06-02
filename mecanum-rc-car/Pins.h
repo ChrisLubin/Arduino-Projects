@@ -1,0 +1,15 @@
+#define MOTOR_1_ENABLE_PIN 5
+#define MOTOR_1_IN_1_PIN 12
+#define MOTOR_1_IN_2_PIN 11
+#define MOTOR_2_ENABLE_PIN 3
+#define MOTOR_2_IN_1_PIN 4
+#define MOTOR_2_IN_2_PIN 2
+#define MOTOR_3_ENABLE_PIN 6
+#define MOTOR_3_IN_1_PIN 13
+#define MOTOR_3_IN_2_PIN 7
+#define MOTOR_4_ENABLE_PIN 10
+#define MOTOR_4_IN_1_PIN 9
+#define MOTOR_4_IN_2_PIN 8
+
+#define ULTRA_SONIC_ECHO_PIN A2
+#define ULTRA_SONIC_TRIG_PIN A3
