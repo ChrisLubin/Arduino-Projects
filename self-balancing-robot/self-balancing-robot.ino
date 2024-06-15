@@ -1,3 +1,4 @@
+#include "Helpers.h"
 #include "Actions.h"
 #include "Pins.h"
 #include "Motors.h"
@@ -15,8 +16,10 @@ void setup() {
 void loop() {
   delay(2);
 
-  accelerometerLoop();
   bluetoothLoop();
+  checkAndUpdatePidTuning();
+
+  accelerometerLoop();
 
   getAndProcessMotorCommand();
 }
@@ -41,4 +44,15 @@ void getAndProcessMotorCommand() {
   }
 
   processMotorCommand(command);
+}
+
+// Checks if any command received from bluetooth to update PID tuning
+void checkAndUpdatePidTuning() {
+  if (hasPidCommandFromBluetooth(P)) {
+    setAccelerometerTuningVal(P, getPidCommandValFromBluetooth(P));
+  } else if (hasPidCommandFromBluetooth(I)) {
+    setAccelerometerTuningVal(I, getPidCommandValFromBluetooth(I));
+  } else if (hasPidCommandFromBluetooth(D)) {
+    setAccelerometerTuningVal(D, getPidCommandValFromBluetooth(D));
+  }
 }

@@ -33,16 +33,15 @@ void setUpAccelerometer() {
   
   byte status = mpu.begin();
   while(status != 0) { } // wait for MPU6050 to be ready
-  if (isLogging) {
-    Serial.println(F("MPU6050 is ready"));
-  }
+  println(isLogging, "MPU6050 is ready");
 
-  // Allow MPU time to calibrate itself to get currentAngle to correct value
-  for (int i = 0; i < 1000; i++) {
+  println(isLogging, "Calibrating currentAngle val...");
+  for (int i = 0; i < 200; i++) {
     delay(1);
     updateCurrentAngle();
   }
 
+  println(isLogging, "Waiting for the robot to be centered...");
   while(abs(currentAngle - targetAngle) > START_BALANCING_ANGLE_THRESHOLD) {
     delay(2);
     updateCurrentAngle();
@@ -58,12 +57,10 @@ void accelerometerLoop() {
   updateCurrentAngle();
   pidController.Compute();
 
-  if (isLogging) {
-    Serial.print("Current Angle - ");
-    Serial.print(currentAngle);
-    Serial.print("\t Output - ");
-    Serial.println(pidOutput);
-  }
+  print(isLogging, "Current Angle - ");
+  print(isLogging, currentAngle);
+  print(isLogging, "\t Output - ");
+  println(isLogging, pidOutput);
 }
 
 int getMotorSpeedFromAccelerometer() {
@@ -96,4 +93,26 @@ void setAccelerometerTargetAngleOffset(double offset) {
   targetAngle = ORIGNAL_TARGET_ANGLE + offset;
 
   updateTargetAngleOffsetThreshold();
+}
+
+void setAccelerometerTuningVal(PID_TUNINGS parameter, double val) {
+  if (val == DO_NOT_CHANGE_PID_VAL) {
+    return;
+  }
+
+  switch(parameter) {
+    case P:
+      kp = val;
+      break;
+    case I:
+      ki = val;
+      break;
+    case D:
+      kd = val;
+      break;
+    default:
+      return;
+  }
+
+  pidController.SetTunings(kp, ki, kd);
 }
