@@ -2,13 +2,13 @@
 #include <MPU6050_light.h>
 #include <PID_v1.h>
 
+#define START_BALANCING_ANGLE_THRESHOLD 2
 #define DATA_CHECK_INTERVAL_MILLIS 10
 #define STOP_MOTORS_ANGLE_THRESHOLD 45
 
 MPU6050 mpu(Wire);
 
 bool isLogging = true;
-
 
 // PID
 double targetAngle = -5;
@@ -22,15 +22,32 @@ double stopMotorsLowAngleThreshold = targetAngle - STOP_MOTORS_ANGLE_THRESHOLD;
 double stopMotorsHighAngleThreshold = targetAngle + STOP_MOTORS_ANGLE_THRESHOLD;
 PID pidController(&currentAngle, &pidOutput, &targetAngle, kp, ki, kd, REVERSE);
 
+void updateCurrentAngle() {
+  mpu.update();
+  currentAngle = mpu.getAngleX();
+}
+
 void setUpAccelerometer() {
   digitalWrite(LED_BUILTIN, HIGH);
   Wire.begin();
   
   byte status = mpu.begin();
-  Serial.print(F("MPU6050 status: "));
-  Serial.println(status);
   while(status != 0) { } // wait for MPU6050 to be ready
-  
+  if (isLogging) {
+    Serial.println(F("MPU6050 is ready"));
+  }
+
+  // Allow MPU time to calibrate itself to get currentAngle to correct value
+  for (int i = 0; i < 1000; i++) {
+    delay(1);
+    updateCurrentAngle();
+  }
+
+  while(abs(currentAngle - targetAngle) > START_BALANCING_ANGLE_THRESHOLD) {
+    delay(2);
+    updateCurrentAngle();
+  }
+
   digitalWrite(LED_BUILTIN, LOW);
   pidController.SetSampleTime(5);
   pidController.SetOutputLimits(-HIGHEST_MOTOR_SPEED, HIGHEST_MOTOR_SPEED);
@@ -38,9 +55,7 @@ void setUpAccelerometer() {
 }
 
 void accelerometerLoop() {
-  mpu.update();
-
-  currentAngle = mpu.getAngleX();
+  updateCurrentAngle();
   pidController.Compute();
 
   if (isLogging) {

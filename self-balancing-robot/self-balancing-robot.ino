@@ -7,9 +7,9 @@
 void setup() {
   Serial.begin(9600);
 
-  setUpAccelerometer();
   setUpMotors();
   setUpBluetooth();
+  setUpAccelerometer();
 }
 
 void loop() {
