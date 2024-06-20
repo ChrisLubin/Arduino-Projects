@@ -116,3 +116,7 @@ void setAccelerometerTuningVal(PID_TUNINGS parameter, double val) {
 
   pidController.SetTunings(kp, ki, kd);
 }
+
+double getAccelerometerAngleDiff() {
+  return currentAngle - targetAngle;
+}

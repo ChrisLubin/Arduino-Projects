@@ -3,6 +3,7 @@
 #include "Pins.h"
 #include "Motors.h"
 #include "Bluetooth.h"
+#include "Leds.h"
 #include "Accelerometer.h"
 
 void setup() {
@@ -10,6 +11,7 @@ void setup() {
 
   setUpMotors();
   setUpBluetooth();
+  setUpLeds();
   setUpAccelerometer();
 }
 
@@ -20,8 +22,9 @@ void loop() {
   checkAndUpdatePidTuning();
 
   accelerometerLoop();
-
   getAndProcessMotorCommand();
+
+  updateLedColors();
 }
 
 void getAndProcessMotorCommand() {
@@ -55,4 +58,12 @@ void checkAndUpdatePidTuning() {
   } else if (hasPidCommandFromBluetooth(D)) {
     setAccelerometerTuningVal(D, getPidCommandValFromBluetooth(D));
   }
+}
+
+void updateLedColors() {
+  int r = constrain(map(abs(getAccelerometerAngleDiff()), 0, 20, 0, 255), 0, 255);
+  int g = constrain(map(abs(getAccelerometerAngleDiff()), 0, 20, 255, 0), 0, 255);
+  int b = 0;
+
+  ledsLoop(r, g, b);
 }
